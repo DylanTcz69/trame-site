@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trame — Sécurité</title>
+  <meta name="description" content="Comment Trame protège les données d'un foyer : autorisation en base, tests d'intrusion automatisés, chiffrement de la session.">
+  <meta name="theme-color" content="#17140F">
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header class="entete">
+      <img src="icon.png" alt="" width="52" height="52">
+      <span class="marque">Trame</span>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="confidentialite.html">Confidentialité</a>
+      </nav>
+    </header>
+
+    <h1>Sécurité</h1>
+    <p class="lead">
+      Une application familiale contient l'agenda de vos enfants, votre adresse et vos dépenses.
+      Voici, sans jargon commercial, comment ces données sont protégées — et ce qui ne l'est pas
+      encore.
+    </p>
+
+    <h2>Le principe : le téléphone n'a jamais le dernier mot</h2>
+    <section class="bloc">
+      <p>
+        L'application installée sur votre téléphone n'est pas une autorité de confiance : n'importe
+        qui peut l'analyser, la modifier, ou parler directement au serveur sans elle. Toutes les
+        règles d'accès de Trame sont donc appliquées <strong>dans la base de données</strong>, au
+        niveau de chaque ligne. Une requête qui demande les événements d'un autre foyer ne reçoit
+        pas une erreur : elle reçoit zéro ligne, parce que ces lignes n'existent pas pour elle.
+      </p>
+      <p>
+        Ces règles s'appuient sur des fonctions qui vivent dans un schéma non exposé par l'API :
+        elles ne sont pas appelables depuis l'extérieur, seulement par la base elle-même.
+      </p>
+    </section>
+
+    <h2>Ce qui est en place</h2>
+    <div class="grille">
+      <div class="carte">
+        <h3>Isolation par foyer</h3>
+        <p>Chaque table est protégée ligne à ligne. Le foyer d'appartenance d'une donnée est
+          réécrit par la base à l'écriture : le client ne peut pas le choisir.</p>
+      </div>
+      <div class="carte">
+        <h3>Rôles réels</h3>
+        <p>Adulte, enfant et lecture seule ne sont pas de simples affichages : un compte enfant ne
+          peut pas supprimer le foyer ni voir le budget, quoi qu'envoie son téléphone.</p>
+      </div>
+      <div class="carte">
+        <h3>Connexion sans mot de passe</h3>
+        <p>Un code à usage unique envoyé par courriel. Aucun mot de passe à retenir, à réutiliser,
+          ni à se faire voler dans une fuite ailleurs.</p>
+      </div>
+      <div class="carte">
+        <h3>Session chiffrée sur l'appareil</h3>
+        <p>Le jeton de session est chiffré (AES-256) ; la clé vit dans l'enclave sécurisée du
+          téléphone et ne quitte jamais cet appareil.</p>
+      </div>
+      <div class="carte">
+        <h3>Fichiers privés</h3>
+        <p>Documents et photos de profil sont stockés dans des espaces privés. L'accès passe par
+          des liens signés à durée limitée, jamais par une adresse publique devinable.</p>
+      </div>
+      <div class="carte">
+        <h3>Aucun secret dans le code</h3>
+        <p>Aucune clé ni mot de passe n'est écrit dans le code, les journaux ou l'historique du
+          dépôt. Seules l'adresse du service et une clé publique voyagent avec l'application.</p>
+      </div>
+    </div>
+
+    <h2>Ce qui le prouve</h2>
+    <section class="bloc">
+      <p>
+        Affirmer qu'une application est sécurisée ne vaut rien sans vérification. Trame embarque
+        une <strong>batterie de tests d'intrusion</strong> qui rejouent, depuis un compte
+        d'attaquant, les scénarios qu'on redoute : lire l'agenda d'un autre foyer, s'y ajouter
+        comme membre, déplacer une donnée d'un foyer à l'autre, se promouvoir administrateur,
+        écrire alors qu'on est en lecture seule.
+      </p>
+      <p>
+        Ces tests s'exécutent automatiquement à chaque modification du code, sur une base de
+        données neuve, par intégration continue. Une règle d'accès affaiblie par mégarde fait
+        échouer la vérification avant d'atteindre qui que ce soit.
+      </p>
+    </section>
+
+    <h2>Deux erreurs, et ce qu'elles ont appris</h2>
+    <section class="bloc">
+      <p>
+        Le durcissement a introduit deux régressions, corrigées depuis. Elles sont documentées
+        publiquement plutôt qu'effacées, parce qu'un rapport de sécurité qui ne contient que des
+        succès n'est pas un rapport de sécurité.
+      </p>
+      <ul>
+        <li>
+          Un retrait de droits trop large a cassé la génération des codes d'invitation :
+          <em>restreindre sans cartographier les usages, c'est provoquer une panne.</em>
+        </li>
+        <li>
+          Un test d'intrusion écrit à la main portait une ambiguïté de nommage qui le faisait
+          échouer pour une mauvaise raison : <em>un test qui échoue mal vaut presque un test
+          absent.</em>
+        </li>
+      </ul>
+    </section>
+
+    <h2>Risques assumés</h2>
+    <section class="bloc">
+      <p>
+        Aucun système n'est parfaitement sûr, et prétendre le contraire est déjà un défaut.
+        Aujourd'hui, les données ne sont pas chiffrées de bout en bout : l'hébergeur pourrait
+        techniquement les lire. Un membre du foyer, par définition, voit les données du foyer. Et
+        la sécurité d'un compte repose sur celle de la boîte courriel associée.
+      </p>
+    </section>
+
+    <h2>Signaler une faille</h2>
+    <section class="bloc">
+      <p>
+        Si vous trouvez un problème de sécurité, écrivez à
+        <strong><a href="mailto:bonjour@trameapp.app">bonjour@trameapp.app</a></strong> plutôt que de le publier. Toute
+        divulgation responsable reçoit une réponse, et un correctif si elle est fondée.
+      </p>
+    </section>
+
+    <footer>
+      <a href="index.html">Accueil</a>
+      <a href="confidentialite.html">Politique de confidentialité</a>
+    </footer>
+  </main>
+</body>
+</html>

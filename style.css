@@ -1,0 +1,163 @@
+/*
+ * Direction artistique « Tissage », version vive — mêmes jetons que l'app
+ * (app-mobile/src/lib/theme.ts et palette.ts).
+ *
+ * Aucune police distante, aucun script, aucune image tierce : la page ne
+ * déclenche AUCUNE requête vers un autre domaine. C'est ce qui permet
+ * d'écrire honnêtement sur ce site qu'il ne piste personne.
+ */
+:root {
+  --bg: #17140F;
+  --surface: #241E18;
+  --surface-alt: #2E271F;
+  --border: #413528;
+  --text: #F6EFE4;
+  --muted: #B4A794;
+  --ink: #1B1611;
+
+  --terracotta: #F0805A;
+  --ocre: #F2B63F;
+  --sauge: #7FC98A;
+  --canard: #3FBDB6;
+  --ardoise: #6FA0E6;
+  --prune: #B678C9;
+  --rose: #F08CA8;
+  --lin: #E3D5BC;
+
+  --accent: var(--terracotta);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { max-width: 860px; margin: 0 auto; padding: 40px 20px 96px; }
+main.etroit { max-width: 680px; }
+
+h1 { font-size: clamp(32px, 7vw, 46px); line-height: 1.1; margin: 8px 0 12px; letter-spacing: -0.5px; }
+h2 { font-size: 24px; margin: 48px 0 12px; letter-spacing: -0.3px; }
+h3 { font-size: 17px; margin: 0 0 4px; }
+
+a { color: var(--accent); }
+.back a { text-decoration: none; }
+.muted { color: var(--muted); font-size: 14px; }
+.lead { color: var(--muted); font-size: clamp(18px, 4vw, 21px); margin: 0 0 28px; }
+
+/* --- En-tête ------------------------------------------------------------- */
+.entete { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.entete img { border-radius: 22px; display: block; }
+.marque { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+.entete nav { margin-left: auto; display: flex; gap: 18px; font-size: 15px; }
+.entete nav a { color: var(--muted); text-decoration: none; }
+.entete nav a:hover { color: var(--text); }
+
+/* --- Bandeau d'accueil --------------------------------------------------- */
+.hero {
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(240, 128, 90, 0.22), transparent 60%),
+    var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: clamp(24px, 6vw, 48px);
+  margin-bottom: 40px;
+}
+.hero p:last-child { margin-bottom: 0; }
+
+.boutons { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.bouton {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+}
+.bouton.secondaire { background: transparent; color: var(--text); border: 1px solid var(--border); }
+
+/* --- Grille de modules --------------------------------------------------- */
+.grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.carte {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 20px;
+}
+.carte p { margin: 0; color: var(--muted); font-size: 15px; }
+.pastille {
+  width: 34px; height: 34px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 10px;
+}
+
+/* Chaque module reprend sa couleur dans l'app : le site et l'écran d'accueil
+   doivent se reconnaître au premier coup d'œil. */
+.c-calendrier { background: var(--ardoise); }
+.c-listes { background: var(--ocre); }
+.c-courses { background: var(--sauge); }
+.c-repas { background: var(--terracotta); }
+.c-anniversaires { background: var(--rose); }
+.c-notes { background: var(--canard); }
+.c-budget { background: var(--sauge); }
+.c-horaire { background: var(--prune); }
+
+/* --- Captures d'écran ---------------------------------------------------- */
+.captures { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+.captures figure { margin: 0; flex: 0 0 240px; scroll-snap-align: start; }
+.captures img { width: 100%; border-radius: 22px; border: 1px solid var(--border); display: block; }
+.captures figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+
+/* --- Sections de texte --------------------------------------------------- */
+section.bloc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 22px;
+  margin: 16px 0;
+}
+section.bloc > :first-child { margin-top: 0; }
+section.bloc p, section.bloc ul { color: var(--muted); }
+section.bloc li + li { margin-top: 6px; }
+
+.etiquette {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-bottom: 10px;
+}
+
+code {
+  background: var(--surface-alt);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 15px;
+}
+
+footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+footer a { color: var(--muted); }
+
+/* Sur un téléphone, les liens d'en-tête débordaient à droite : ils passent
+   sous le nom, alignés à gauche. */
+@media (max-width: 520px) {
+  .entete { flex-wrap: wrap; row-gap: 10px; }
+  .entete nav { margin-left: 0; flex-basis: 100%; gap: 16px; }
+  .boutons .bouton { flex: 1 1 100%; text-align: center; }
+}
