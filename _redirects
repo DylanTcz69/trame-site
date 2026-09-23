@@ -6,6 +6,9 @@
 /securite          /securite.html         200
 /confidentialite   /confidentialite.html  200
 
+# Lien d'invitation court : trameapp.app/join/<jeton> → écran de l'app.
+/join/*            /app/join/:splat       302
+
 # Trame sur le web : chaque écran de l'app renvoie à sa page d'entrée,
 # qui affiche le bon écran selon l'adresse.
 /app               /trame-app.html        200
