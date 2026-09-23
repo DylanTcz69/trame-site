@@ -95,7 +95,7 @@
 
     <!-- --- Une journée, écran par écran ------------------------------------ -->
     <h2 id="visite" style="--fil: var(--ardoise)">Une journée dans Trame</h2>
-    <div class="jauge" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="jauge" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="visite">
       <div class="etapes">
         <div class="etape" data-ecran="0">
@@ -111,12 +111,18 @@
           <img class="ecran-mobile" src="captures/ecran-calendrier.png" alt="Calendrier du mois dans Trame" loading="lazy">
         </div>
         <div class="etape" data-ecran="2">
-          <div class="fil-etape" style="background: var(--sauge)"></div>
-          <h3>Les courses, rangées par rayon</h3>
-          <p>L'un coche au magasin, l'autre le voit à la maison. La liste se range toute seule, du rayon fruits à la crémerie.</p>
-          <img class="ecran-mobile" src="captures/ecran-courses.png" alt="Liste de courses dans Trame" loading="lazy">
+          <div class="fil-etape" style="background: var(--terracotta)"></div>
+          <h3>Le menu de la semaine</h3>
+          <p>On pose une recette sur un déjeuner ou un dîner. Fini le « on mange quoi ce soir ? » à 19 h : c'est écrit, et les deux le voient.</p>
+          <img class="ecran-mobile" src="captures/ecran-repas.png" alt="Menu de la semaine dans Trame" loading="lazy">
         </div>
         <div class="etape" data-ecran="3">
+          <div class="fil-etape" style="background: var(--sauge)"></div>
+          <h3>Les courses se remplissent toutes seules</h3>
+          <p>Les ingrédients des recettes de la semaine arrivent dans la liste d'un geste, rangés par rayon. L'un coche au magasin, l'autre le voit à la maison.</p>
+          <img class="ecran-mobile" src="captures/ecran-courses.png" alt="Liste de courses dans Trame" loading="lazy">
+        </div>
+        <div class="etape" data-ecran="4">
           <div class="fil-etape" style="background: var(--sauge)"></div>
           <h3>Le budget, sans calculatrice</h3>
           <p>Chacun note ce qu'il paie. Trame dessine l'équilibre et dit qui doit combien à qui.</p>
@@ -127,12 +133,34 @@
         <div class="cadre">
           <img class="montre" src="captures/ecran-aujourdhui.png" alt="">
           <img src="captures/ecran-calendrier.png" alt="">
+          <img src="captures/ecran-repas.png" alt="">
           <img src="captures/ecran-courses.png" alt="">
           <img src="captures/ecran-budget.png" alt="">
         </div>
       </div>
     </div>
     <p class="note-captures">Foyer fictif, pour l'exemple.</p>
+
+    <!-- --- Du menu aux courses ----------------------------------------------- -->
+    <h2 style="--fil: var(--terracotta)">Du menu aux courses, en un geste</h2>
+    <p class="lead revele">Une recette au menu, et ses ingrédients vont dans la liste. Ce qui y est déjà n'est pas ajouté deux fois.</p>
+    <div class="menu-courses revele">
+      <div class="recette">
+        <div class="recette-quand">Mardi · dîner</div>
+        <div class="recette-titre">Curry de lentilles</div>
+        <div class="recette-pour">pour 4 personnes</div>
+        <ul id="ingredients">
+          <li>Lentilles corail</li><li>Lait de coco</li><li>Oignons</li><li>Pâte de curry</li><li>Riz basmati</li>
+        </ul>
+        <button type="button" class="bouton" id="envoyer-courses">Faire la liste de courses</button>
+      </div>
+      <div class="lien-demo" aria-hidden="true"><i id="perle-courses"></i></div>
+      <div class="tel">
+        <div class="qui" style="color: var(--sauge)">Courses <small>la liste du foyer</small></div>
+        <ul id="liste-courses"><li>Pommes</li><li>Riz basmati</li><li>Lait</li></ul>
+        <p class="bilan" id="bilan-courses" aria-live="polite"></p>
+      </div>
+    </div>
 
     <!-- --- Le temps réel, à essayer ----------------------------------------- -->
     <h2 style="--fil: var(--sauge)">Ce que l'un ajoute, l'autre le voit</h2>

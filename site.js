@@ -6,6 +6,26 @@
   'use strict';
   var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Un article s'identifie par son nom, sans tenir compte des majuscules ni
+  // des espaces : « citron » et « Citron » sont le même article.
+  function cle(texte) { return texte.trim().toLowerCase(); }
+  function nomDe(li) { return li.dataset.nom || li.textContent; }
+  function trouver(liste, texte) {
+    return [].find.call(liste.children, function (li) {
+      return cle(nomDe(li)) === cle(texte) && !li.classList.contains('coche');
+    });
+  }
+  // Ajouté une nouvelle fois : pas de doublon, la quantité monte (×2, ×3…).
+  function doubler(li) {
+    var n = Number(li.dataset.n || 1) + 1;
+    li.dataset.n = n;
+    li.dataset.nom = nomDe(li);
+    var fois = li.querySelector('.fois');
+    if (!fois) { fois = document.createElement('span'); fois.className = 'fois'; li.appendChild(fois); }
+    fois.textContent = '×' + n;
+    li.classList.remove('plus'); void li.offsetWidth; li.classList.add('plus');
+  }
+
   // --- Apparition au défilement ------------------------------------------
   var aReveler = document.querySelectorAll('.revele, .sommaire .ligne');
   if ('IntersectionObserver' in window && !calme) {
@@ -70,6 +90,46 @@
     }, 80);
   });
 
+  // --- Du menu aux courses : les ingrédients partent un à un --------------
+  var boutonCourses = document.getElementById('envoyer-courses');
+  if (boutonCourses) {
+    var listeCourses = document.getElementById('liste-courses');
+    var bilan = document.getElementById('bilan-courses');
+    var perleCourses = document.getElementById('perle-courses');
+    boutonCourses.addEventListener('click', function () {
+      boutonCourses.disabled = true;
+      var ingredients = document.querySelectorAll('#ingredients li');
+      var ajoutes = 0, deja = 0;
+      ingredients.forEach(function (ing, i) {
+        setTimeout(function () {
+          var nom = ing.textContent;
+          ing.classList.add('envoye');
+          if (perleCourses) {
+            perleCourses.classList.remove('passe');
+            void perleCourses.offsetWidth;
+            perleCourses.classList.add('passe');
+          }
+          setTimeout(function () {
+            // Comme dans l'app : ce qui est déjà sur la liste n'est pas dupliqué.
+            var present = trouver(listeCourses, nom);
+            if (present) {
+              deja++;
+              doubler(present);
+            } else {
+              ajoutes++;
+              var li = document.createElement('li');
+              li.textContent = nom;
+              li.className = 'neuf';
+              listeCourses.appendChild(li);
+            }
+            bilan.textContent = ajoutes + ' ajouté' + (ajoutes > 1 ? 's' : '') +
+              (deja ? ' · ' + deja + ' déjà prévu' + (deja > 1 ? 's' : '') + ', quantité augmentée' : '');
+          }, calme ? 0 : 600);
+        }, calme ? 0 : i * 550);
+      });
+    });
+  }
+
   // --- Démonstration du temps réel ----------------------------------------
   var form = document.getElementById('demo-form');
   var saisie = document.getElementById('demo-saisie');
@@ -86,7 +146,10 @@
   });
 
   function ajouter(liste, texte) {
+    var existant = trouver(liste, texte);
+    if (existant) { doubler(existant); return; }
     var li = document.createElement('li');
+    li.dataset.nom = texte;
     li.textContent = texte; // textContent : jamais de HTML venu de la saisie.
     li.className = 'neuf';
     li.tabIndex = 0;
@@ -100,12 +163,12 @@
   // disparaît des deux listes (comme « Nettoyer » dans l'app).
   function cocher(li) {
     if (li.classList.contains('coche')) return;
-    var texte = li.textContent;
+    var texte = nomDe(li);
     var autre = li.parentNode === chezCamille ? chezHugo : chezCamille;
     li.classList.add('coche');
     li.setAttribute('aria-checked', 'true');
     lancerPerle();
-    var jumeau = [].find.call(autre.children, function (x) { return x.textContent === texte && !x.classList.contains('coche'); });
+    var jumeau = trouver(autre, texte);
     setTimeout(function () { if (jumeau) jumeau.classList.add('coche'); }, 650);
     setTimeout(function () {
       [li, jumeau].forEach(function (x) { if (x) x.classList.add('part'); });
