@@ -161,3 +161,4 @@ footer a { color: var(--muted); }
   .entete nav { margin-left: 0; flex-basis: 100%; gap: 16px; }
   .boutons .bouton { flex: 1 1 100%; text-align: center; }
 }
+.note-captures { color: var(--muted); font-size: 13px; margin-top: 4px; }
