@@ -33,6 +33,9 @@
   if ('IntersectionObserver' in window && etapes.length) {
     var obsEtape = new IntersectionObserver(function (entrees) {
       entrees.forEach(function (e) {
+        // En carrousel (téléphone), c'est le glissement qui décide.
+        var rail = document.querySelector('.etapes');
+        if (rail && rail.scrollWidth > rail.clientWidth + 4) return;
         if (e.isIntersecting) montrer(Number(e.target.dataset.ecran));
       });
     }, { rootMargin: '-45% 0px -45% 0px' });
@@ -40,16 +43,32 @@
   }
   montrer(0);
 
-  // --- Le trait « maintenant » avance doucement sur la trame ---------------
-  var mnt = document.getElementById('maintenant');
-  if (mnt && !calme) {
-    var x = 260;
-    setInterval(function () {
-      x = x >= 990 ? 110 : x + 1;
-      mnt.setAttribute('x1', x);
-      mnt.setAttribute('x2', x);
-    }, 80);
+  var rail = document.querySelector('.etapes');
+  var jauge = document.querySelectorAll('.jauge i');
+  function suivreCarrousel() {
+    if (rail.scrollWidth <= rail.clientWidth + 4) return; // pas en carrousel (PC)
+    var largeur = etapes[0].getBoundingClientRect().width + 16;
+    var n = Math.max(0, Math.min(etapes.length - 1, Math.round(rail.scrollLeft / largeur)));
+    montrer(n);
+    jauge.forEach(function (j, i) { j.classList.toggle('faite', i <= n); });
   }
+  if (rail) {
+    rail.addEventListener('scroll', suivreCarrousel, { passive: true });
+    suivreCarrousel();
+  }
+
+  // --- Le trait « maintenant » avance doucement sur la trame ---------------
+  // Deux dessins (PC et téléphone), chacun avec sa propre largeur.
+  [['maintenant', 110, 990, 260], ['maintenant-m', 10, 350, 70]].forEach(function (c) {
+    var ligne = document.getElementById(c[0]);
+    if (!ligne || calme) return;
+    var x = c[3];
+    setInterval(function () {
+      x = x >= c[2] ? c[1] : x + (c[0] === 'maintenant' ? 1 : 0.4);
+      ligne.setAttribute('x1', x);
+      ligne.setAttribute('x2', x);
+    }, 80);
+  });
 
   // --- Démonstration du temps réel ----------------------------------------
   var form = document.getElementById('demo-form');
@@ -58,20 +77,63 @@
   var chezHugo = document.getElementById('demo-hugo');
   var signal = document.getElementById('demo-signal');
   if (!form) return;
+  var toucheParVisiteur = false;
+  // Les articles déjà présents se cochent aussi, au clavier comme au doigt.
+  document.querySelectorAll('.demo li').forEach(function (li) {
+    li.tabIndex = 0;
+    li.setAttribute('role', 'checkbox');
+    li.setAttribute('aria-checked', 'false');
+  });
 
   function ajouter(liste, texte) {
     var li = document.createElement('li');
     li.textContent = texte; // textContent : jamais de HTML venu de la saisie.
     li.className = 'neuf';
+    li.tabIndex = 0;
+    li.setAttribute('role', 'checkbox');
+    li.setAttribute('aria-checked', 'false');
     liste.appendChild(li);
     // Pas plus de six lignes : les plus anciennes laissent la place.
     while (liste.children.length > 6) liste.removeChild(liste.firstChild);
   }
+  // Cocher un article : il se barre ici, la perle file chez l'autre, puis il
+  // disparaît des deux listes (comme « Nettoyer » dans l'app).
+  function cocher(li) {
+    if (li.classList.contains('coche')) return;
+    var texte = li.textContent;
+    var autre = li.parentNode === chezCamille ? chezHugo : chezCamille;
+    li.classList.add('coche');
+    li.setAttribute('aria-checked', 'true');
+    lancerPerle();
+    var jumeau = [].find.call(autre.children, function (x) { return x.textContent === texte && !x.classList.contains('coche'); });
+    setTimeout(function () { if (jumeau) jumeau.classList.add('coche'); }, 650);
+    setTimeout(function () {
+      [li, jumeau].forEach(function (x) { if (x) x.classList.add('part'); });
+      setTimeout(function () { [li, jumeau].forEach(function (x) { if (x && x.parentNode) x.parentNode.removeChild(x); }); }, 380);
+    }, 1300);
+  }
+  [chezCamille, chezHugo].forEach(function (liste) {
+    liste.addEventListener('click', function (ev) {
+      if (ev.target.tagName === 'LI') { toucheParVisiteur = true; cocher(ev.target); }
+    });
+    liste.addEventListener('keydown', function (ev) {
+      if (ev.target.tagName === 'LI' && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); cocher(ev.target); }
+    });
+  });
+  function lancerPerle() {
+    var perle = document.getElementById('demo-lien');
+    if (!perle) return;
+    perle.classList.remove('passe');
+    void perle.offsetWidth; // relance l'animation
+    perle.classList.add('passe');
+  }
+
   function envoyer(texte) {
     texte = texte.trim().slice(0, 40);
     if (!texte) return;
     ajouter(chezCamille, texte);
     signal.textContent = '● synchronisation…';
+    lancerPerle();
     signal.classList.add('actif');
     setTimeout(function () {
       ajouter(chezHugo, texte);
@@ -88,7 +150,6 @@
 
   // Tant que personne n'y touche, la démonstration se joue toute seule quand
   // elle devient visible.
-  var toucheParVisiteur = false;
   var exemples = ['Beurre', 'Café', 'Citrons', 'Pain de mie', 'Yaourts'];
   var demo = document.querySelector('.demo');
   if ('IntersectionObserver' in window && !calme) {

@@ -37,7 +37,7 @@
 
       <!-- Un fil par personne, les rendez-vous en nœuds, un événement commun
            qui relie les fils : l'idée de l'app, dessinée. Foyer fictif. -->
-      <svg class="trame-hero" viewBox="0 0 1000 250" role="img"
+      <svg class="trame-hero trame-bureau" viewBox="0 0 1000 250" role="img"
            aria-label="La trame d'une journée : un fil par membre du foyer, les rendez-vous posés dessus, un événement commun qui relie les fils.">
         <text class="nom" x="0" y="54" fill="#6FA0E6">Hugo</text>
         <text class="nom" x="0" y="124" fill="#3FBDB6">Camille</text>
@@ -66,10 +66,36 @@
           <text class="heure" x="530" y="238">15h</text><text class="heure" x="750" y="238">18h</text><text class="heure" x="960" y="238">21h</text>
         </g>
       </svg>
+
+      <!-- Version téléphone : le même dessin recomposé pour un écran étroit
+           (prénoms au-dessus des fils, textes à taille lisible), au lieu de
+           la version large réduite au tiers. -->
+      <svg class="trame-hero trame-mobile" viewBox="0 0 360 300" role="img"
+           aria-label="La trame d'une journée : un fil par membre du foyer, les rendez-vous posés dessus, un événement commun qui relie les fils.">
+        <text class="nom" x="0" y="38" fill="#6FA0E6">Hugo</text>
+        <text class="nom" x="0" y="123" fill="#3FBDB6">Camille</text>
+        <text class="nom" x="0" y="208" fill="#F2B63F">Jules</text>
+        <path class="fil" d="M0 55 H360" stroke="#6FA0E6"/>
+        <path class="fil" d="M0 140 H360" stroke="#3FBDB6"/>
+        <path class="fil" d="M0 225 H360" stroke="#F2B63F"/>
+        <text class="etiq" x="92" y="38" style="animation-delay:1.9s">10:30 · Dentiste</text>
+        <rect class="noeud" x="92" y="48" width="22" height="14" rx="7" fill="#6FA0E6" stroke="#17140F" stroke-width="3" style="animation-delay:1.5s"/>
+        <text class="etiq" x="92" y="123" style="animation-delay:2.1s;fill:#3FBDB6;font-weight:700">Télétravail</text>
+        <rect class="noeud" x="30" y="133" width="150" height="14" rx="7" fill="#3FBDB6" stroke="#17140F" stroke-width="3" style="animation-delay:1.7s"/>
+        <text class="etiq" x="92" y="208" style="animation-delay:2.2s">8:30 · École</text>
+        <rect class="noeud" x="40" y="218" width="160" height="14" rx="7" fill="#F2B63F" stroke="#17140F" stroke-width="3" style="animation-delay:1.8s"/>
+        <path class="lien" d="M270 55 V225" stroke="#E3D5BC" style="animation-delay:2.4s"/>
+        <circle class="noeud" cx="270" cy="55" r="8" fill="#6FA0E6" stroke="#17140F" stroke-width="3" style="animation-delay:2.3s"/>
+        <circle class="noeud" cx="270" cy="140" r="8" fill="#3FBDB6" stroke="#17140F" stroke-width="3" style="animation-delay:2.35s"/>
+        <circle class="noeud" cx="270" cy="225" r="8" fill="#F2B63F" stroke="#17140F" stroke-width="3" style="animation-delay:2.4s"/>
+        <text class="etiq" x="360" y="275" text-anchor="end" style="animation-delay:2.7s;fill:#E3D5BC">17:30 · Foot de Jules, ensemble</text>
+        <line class="maintenant" id="maintenant-m" x1="70" y1="20" x2="70" y2="240"/>
+      </svg>
     </section>
 
     <!-- --- Une journée, écran par écran ------------------------------------ -->
     <h2 id="visite" style="--fil: var(--ardoise)">Une journée dans Trame</h2>
+    <div class="jauge" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <div class="visite">
       <div class="etapes">
         <div class="etape" data-ecran="0">
@@ -110,7 +136,7 @@
 
     <!-- --- Le temps réel, à essayer ----------------------------------------- -->
     <h2 style="--fil: var(--sauge)">Ce que l'un ajoute, l'autre le voit</h2>
-    <p class="lead revele">Essayez : ajoutez un article chez Camille, il arrive chez Hugo.</p>
+    <p class="lead revele">Essayez : ajoutez un article chez Camille, il arrive chez Hugo. Cochez-le d'un côté, il disparaît des deux.</p>
     <div class="demo revele">
       <div class="tel">
         <div class="qui" style="color: var(--canard)">Camille <small>sur son téléphone</small></div>
@@ -120,6 +146,7 @@
           <input id="demo-saisie" maxlength="40" placeholder="Ajouter un article" aria-label="Ajouter un article chez Camille">
         </form>
       </div>
+      <div class="lien-demo" aria-hidden="true"><i id="demo-lien"></i></div>
       <div class="tel">
         <div class="qui" style="color: var(--ardoise)">Hugo <small>au magasin</small></div>
         <span class="signal" id="demo-signal">● à jour</span>
