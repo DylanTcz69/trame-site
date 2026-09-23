@@ -1,0 +1,6 @@
+# Ne jamais mettre en ligne : l'historique git et la configuration.
+.git
+.wrangler
+wrangler.jsonc
+.assetsignore
+README.md

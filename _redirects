@@ -1,8 +1,15 @@
+# Adresses du site. La réécriture automatique étant désactivée
+# (wrangler.jsonc), chaque adresse courte est déclarée ici.
+/                  /index.html            200
+/securite          /securite.html         200
+/confidentialite   /confidentialite.html  200
+
 # Trame sur le web (trameapp.app/app) : une seule page qui affiche le bon
 # écran selon l'adresse. Les fichiers techniques de l'app sont servis tels
 # quels ; toute autre adresse sous /app renvoie à la page de l'app.
-/app/_expo/*   /app/_expo/:splat   200
-/app/assets/*  /app/assets/:splat  200
-/app/favicon.ico  /app/favicon.ico  200
-/app           /app/index.html     200
-/app/*         /app/index.html     200
+/app/_expo/*       /app/_expo/:splat      200
+/app/assets/*      /app/assets/:splat     200
+/app/favicon.ico   /app/favicon.ico       200
+/app/metadata.json /app/metadata.json     200
+/app               /app/index.html        200
+/app/*             /app/index.html        200

@@ -1,0 +1,16 @@
+// Déploiement de trameapp.app (Cloudflare Workers, fichiers statiques).
+// Versionné ici pour ne plus dépendre de la configuration générée à chaque
+// construction par Cloudflare.
+{
+  "name": "trame-site",
+  "compatibility_date": "2026-09-21",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": ".",
+    // Pas de réécriture automatique des adresses (retrait de « .html » et de
+    // « index ») : elle créait une boucle avec la règle de l'app web. Les
+    // adresses courtes du site sont déclarées dans _redirects.
+    "html_handling": "none",
+    "not_found_handling": "none"
+  }
+}
