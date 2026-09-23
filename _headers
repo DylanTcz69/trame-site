@@ -1,0 +1,19 @@
+# En-têtes de sécurité de trameapp.app (audit du 23 septembre 2026).
+#
+# Content-Security-Policy : la page ne peut charger que ses propres fichiers
+# et ne parler qu'à Supabase (API, temps réel, photos). Si une faille
+# d'injection apparaissait un jour, un script étranger ne pourrait ni se
+# charger ni envoyer la session ailleurs.
+#   - 'unsafe-inline' pour les STYLES seulement : l'app web et la vitrine
+#     posent des styles en ligne. Aucun script en ligne n'est autorisé.
+#   - pas de 'unsafe-eval' : les deux eval() du paquet ne servent jamais dans
+#     un navigateur (chargeur de morceaux inutilisé, repli hors navigateur).
+# frame-ancestors 'none' : personne ne peut afficher Trame dans sa page pour
+# piéger un clic (« Retirer du foyer »…).
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://mbijadlknqwdvvhbhnod.supabase.co; font-src 'self' data:; connect-src 'self' https://mbijadlknqwdvvhbhnod.supabase.co wss://mbijadlknqwdvvhbhnod.supabase.co; media-src 'self' blob: https://mbijadlknqwdvvhbhnod.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), geolocation=(self)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
