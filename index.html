@@ -1,18 +1,20 @@
 <!doctype html>
-<html lang="fr-CA">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trame — La semaine de votre famille</title>
-  <meta name="description" content="Trame réunit l'agenda, les listes, les repas et le budget de votre foyer dans une seule application, en temps réel sur chaque téléphone.">
+  <meta name="description" content="Trame réunit l'agenda, les listes, les repas et le budget de votre foyer dans une seule application, en temps réel sur chaque téléphone. Sans publicité.">
   <meta name="theme-color" content="#17140F">
   <link rel="icon" href="icon.png">
+  <link rel="preload" href="polices/Fraunces_300Light.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
 </head>
 <body>
   <main>
     <header class="entete">
-      <img src="icon.png" alt="" width="52" height="52">
+      <img src="icon.png" alt="" width="40" height="40">
       <span class="marque">Trame</span>
       <nav>
         <a href="/securite">Sécurité</a>
@@ -21,104 +23,134 @@
       </nav>
     </header>
 
-    <div class="hero">
+    <!-- --- Accueil : la promesse, puis une trame qui se tisse ------------- -->
+    <section class="hero">
       <h1>La semaine de votre famille,<br>planifiée à deux.</h1>
       <p class="lead">
         L'agenda, les courses, les repas, les anniversaires et le budget du foyer au même
         endroit. Ce que l'un ajoute, l'autre le voit aussitôt.
       </p>
       <div class="boutons">
-        <a class="bouton" href="#modules">Découvrir</a>
+        <a class="bouton" href="#visite">Voir une journée</a>
         <a class="bouton secondaire" href="/securite">Comment vos données sont protégées</a>
       </div>
-    </div>
 
-    <!-- Écrans reconstitués fidèlement à partir de l'app, avec un foyer FICTIF
-         (Camille et Hugo) : aucune donnée réelle. Sources : design/captures. -->
-    <h2>À quoi ça ressemble</h2>
-    <div class="captures">
-      <figure>
-        <img src="captures/ecran-aujourdhui.png" alt="Écran Aujourd'hui : la date, ce qui attend, et la trame du jour de chaque membre" width="240" height="519" loading="lazy">
-        <figcaption>Aujourd'hui : un fil par personne, les rendez-vous posés dessus.</figcaption>
-      </figure>
-      <figure>
-        <img src="captures/ecran-calendrier.png" alt="Calendrier du mois, une couleur par personne" width="240" height="519" loading="lazy">
-        <figcaption>Le mois : la couleur dit qui.</figcaption>
-      </figure>
-      <figure>
-        <img src="captures/ecran-courses.png" alt="Liste de courses rangée par rayon" width="240" height="519" loading="lazy">
-        <figcaption>Les courses, rangées par rayon.</figcaption>
-      </figure>
-      <figure>
-        <img src="captures/ecran-budget.png" alt="Budget : qui a payé quoi et qui doit combien" width="240" height="519" loading="lazy">
-        <figcaption>Le budget : qui doit quoi, d'un coup d'œil.</figcaption>
-      </figure>
+      <!-- Un fil par personne, les rendez-vous en nœuds, un événement commun
+           qui relie les fils : l'idée de l'app, dessinée. Foyer fictif. -->
+      <svg class="trame-hero" viewBox="0 0 1000 250" role="img"
+           aria-label="La trame d'une journée : un fil par membre du foyer, les rendez-vous posés dessus, un événement commun qui relie les fils.">
+        <text class="nom" x="0" y="54" fill="#6FA0E6">Hugo</text>
+        <text class="nom" x="0" y="124" fill="#3FBDB6">Camille</text>
+        <text class="nom" x="0" y="194" fill="#F2B63F">Jules</text>
+        <path class="fil" d="M90 50 H1000" stroke="#6FA0E6"/>
+        <path class="fil" d="M90 120 H1000" stroke="#3FBDB6"/>
+        <path class="fil" d="M90 190 H1000" stroke="#F2B63F"/>
+
+        <text class="etiq" x="300" y="30" style="animation-delay:1.9s">Dentiste</text>
+        <rect class="noeud" x="300" y="43" width="34" height="14" rx="7" fill="#6FA0E6" stroke="#17140F" stroke-width="3" style="animation-delay:1.5s"/>
+        <text class="etiq" x="150" y="100" style="animation-delay:2.1s;fill:#3FBDB6;font-weight:700">Télétravail</text>
+        <rect class="noeud" x="150" y="113" width="330" height="14" rx="7" fill="#3FBDB6" stroke="#17140F" stroke-width="3" style="animation-delay:1.7s"/>
+        <text class="etiq" x="200" y="170" style="animation-delay:2.2s">8:30 · École</text>
+        <rect class="noeud" x="200" y="183" width="360" height="14" rx="7" fill="#F2B63F" stroke="#17140F" stroke-width="3" style="animation-delay:1.8s"/>
+
+        <!-- Le foot de Jules : les trois fils se rejoignent -->
+        <path class="lien" d="M716 50 V190" stroke="#E3D5BC" style="animation-delay:2.4s"/>
+        <circle class="noeud" cx="716" cy="50" r="9" fill="#6FA0E6" stroke="#17140F" stroke-width="3" style="animation-delay:2.3s"/>
+        <circle class="noeud" cx="716" cy="120" r="9" fill="#3FBDB6" stroke="#17140F" stroke-width="3" style="animation-delay:2.35s"/>
+        <circle class="noeud" cx="716" cy="190" r="9" fill="#F2B63F" stroke="#17140F" stroke-width="3" style="animation-delay:2.4s"/>
+        <text class="etiq etiq-longue" x="730" y="100" style="animation-delay:2.7s;fill:#E3D5BC">17:30 · Foot de Jules, ensemble</text>
+
+        <line class="maintenant" id="maintenant" x1="260" y1="30" x2="260" y2="208"/>
+        <g class="heures">
+          <text class="heure" x="90" y="238">8h</text><text class="heure" x="310" y="238">12h</text>
+          <text class="heure" x="530" y="238">15h</text><text class="heure" x="750" y="238">18h</text><text class="heure" x="960" y="238">21h</text>
+        </g>
+      </svg>
+    </section>
+
+    <!-- --- Une journée, écran par écran ------------------------------------ -->
+    <h2 id="visite" style="--fil: var(--ardoise)">Une journée dans Trame</h2>
+    <div class="visite">
+      <div class="etapes">
+        <div class="etape" data-ecran="0">
+          <div class="fil-etape" style="background: var(--terracotta)"></div>
+          <h3>Le matin, la trame du jour</h3>
+          <p>Un fil par personne, les rendez-vous posés dessus. On voit d'un coup d'œil qui est pris, et quand on se retrouve.</p>
+          <img class="ecran-mobile" src="captures/ecran-aujourdhui.png" alt="Écran Aujourd'hui de Trame" loading="lazy">
+        </div>
+        <div class="etape" data-ecran="1">
+          <div class="fil-etape" style="background: var(--ardoise)"></div>
+          <h3>Le mois, en une couleur par personne</h3>
+          <p>La couleur dit qui, pas où. Les horaires qui reviennent tous les jours s'effacent pour laisser ressortir l'exceptionnel.</p>
+          <img class="ecran-mobile" src="captures/ecran-calendrier.png" alt="Calendrier du mois dans Trame" loading="lazy">
+        </div>
+        <div class="etape" data-ecran="2">
+          <div class="fil-etape" style="background: var(--sauge)"></div>
+          <h3>Les courses, rangées par rayon</h3>
+          <p>L'un coche au magasin, l'autre le voit à la maison. La liste se range toute seule, du rayon fruits à la crémerie.</p>
+          <img class="ecran-mobile" src="captures/ecran-courses.png" alt="Liste de courses dans Trame" loading="lazy">
+        </div>
+        <div class="etape" data-ecran="3">
+          <div class="fil-etape" style="background: var(--sauge)"></div>
+          <h3>Le budget, sans calculatrice</h3>
+          <p>Chacun note ce qu'il paie. Trame dessine l'équilibre et dit qui doit combien à qui.</p>
+          <img class="ecran-mobile" src="captures/ecran-budget.png" alt="Budget partagé dans Trame" loading="lazy">
+        </div>
+      </div>
+      <div class="telephone" aria-hidden="true">
+        <div class="cadre">
+          <img class="montre" src="captures/ecran-aujourdhui.png" alt="">
+          <img src="captures/ecran-calendrier.png" alt="">
+          <img src="captures/ecran-courses.png" alt="">
+          <img src="captures/ecran-budget.png" alt="">
+        </div>
+      </div>
     </div>
     <p class="note-captures">Foyer fictif, pour l'exemple.</p>
 
-    <h2 id="modules">Tout ce qui fait tourner un foyer</h2>
-    <div class="grille">
-      <div class="carte">
-        <div class="pastille c-calendrier">🗓️</div>
-        <h3>Agenda partagé</h3>
-        <p>Vue jour, semaine et mois, événements récurrents, calendriers par personne, rappels.</p>
+    <!-- --- Le temps réel, à essayer ----------------------------------------- -->
+    <h2 style="--fil: var(--sauge)">Ce que l'un ajoute, l'autre le voit</h2>
+    <p class="lead revele">Essayez : ajoutez un article chez Camille, il arrive chez Hugo.</p>
+    <div class="demo revele">
+      <div class="tel">
+        <div class="qui" style="color: var(--canard)">Camille <small>sur son téléphone</small></div>
+        <ul id="demo-camille"><li>Pommes</li><li>Lait</li></ul>
+        <form id="demo-form" autocomplete="off">
+          <span aria-hidden="true">+</span>
+          <input id="demo-saisie" maxlength="40" placeholder="Ajouter un article" aria-label="Ajouter un article chez Camille">
+        </form>
       </div>
-      <div class="carte">
-        <div class="pastille c-courses">🛒</div>
-        <h3>Courses en temps réel</h3>
-        <p>L'un coche au magasin, l'autre le voit à la maison. Listes types pour les achats du mois.</p>
-      </div>
-      <div class="carte">
-        <div class="pastille c-listes">✓</div>
-        <h3>Tâches</h3>
-        <p>Qui fait quoi, avec une échéance. Attribuables à un membre du foyer.</p>
-      </div>
-      <div class="carte">
-        <div class="pastille c-repas">🍽️</div>
-        <h3>Repas et recettes</h3>
-        <p>Le menu de la semaine, et les ingrédients envoyés d'un geste vers la liste de courses.</p>
-      </div>
-      <div class="carte">
-        <div class="pastille c-anniversaires">🎁</div>
-        <h3>Anniversaires</h3>
-        <p>Plus jamais oublié. Reconnus automatiquement si votre ancien calendrier les contenait.</p>
-      </div>
-      <div class="carte">
-        <div class="pastille c-budget">💶</div>
-        <h3>Budget partagé</h3>
-        <p>Les dépenses communes, qui a payé quoi, et qui doit combien à qui. Dans votre devise.</p>
-      </div>
-      <div class="carte">
-        <div class="pastille c-horaire">🕘</div>
-        <h3>Horaires</h3>
-        <p>Les semaines A/B, l'école, le travail, les activités — copiables d'un jour à l'autre.</p>
-      </div>
-      <div class="carte">
-        <div class="pastille c-notes">💬</div>
-        <h3>Notes et messages</h3>
-        <p>La conversation du foyer et les notes partagées, sans passer par une autre application.</p>
+      <div class="tel">
+        <div class="qui" style="color: var(--ardoise)">Hugo <small>au magasin</small></div>
+        <span class="signal" id="demo-signal">● à jour</span>
+        <ul id="demo-hugo"><li>Pommes</li><li>Lait</li></ul>
       </div>
     </div>
 
-    <h2>Ce que Trame ne fait pas</h2>
-    <div class="grille">
-      <div class="carte">
-        <h3>Aucune publicité</h3>
-        <p>Pas de bannière, pas de contenu sponsorisé, pas d'écran d'attente commercial.</p>
-      </div>
-      <div class="carte">
-        <h3>Aucun traqueur</h3>
-        <p>Pas de pistage publicitaire, pas de revente de données. Ce site non plus ne vous suit pas :
-          il n'envoie aucune requête vers un autre domaine.</p>
-      </div>
-      <div class="carte">
-        <h3>Aucune donnée vendue</h3>
-        <p>Les données d'un foyer servent au foyer. Elles ne sont ni exploitées ni cédées.</p>
-      </div>
+    <!-- --- Sommaire ---------------------------------------------------------- -->
+    <h2 id="modules" style="--fil: var(--ocre)">Tout ce qui fait tourner un foyer</h2>
+    <div class="sommaire">
+      <div class="ligne"><div class="brin" style="background: var(--ardoise)"></div><div><h3>Agenda partagé</h3><p>Jour, semaine, mois, agenda. Répétitions sur mesure, rappels, une couleur par personne.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--sauge)"></div><div><h3>Courses en temps réel</h3><p>Rangées par rayon, listes types pour les achats du mois, plusieurs listes sur l'accueil.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--ocre)"></div><div><h3>Tâches</h3><p>Qui fait quoi, avec une échéance, attribuées à un membre du foyer.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--terracotta)"></div><div><h3>Repas et recettes</h3><p>Le menu de la semaine, et les ingrédients envoyés d'un geste vers les courses.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--rose)"></div><div><h3>Anniversaires</h3><p>Reconnus automatiquement si votre ancien calendrier les contenait.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--sauge)"></div><div><h3>Budget partagé</h3><p>Qui a payé quoi, qui doit combien à qui. Dans votre devise.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--prune)"></div><div><h3>Emploi du temps</h3><p>Semaines A et B, école, activités, copiables d'un jour à l'autre.</p></div></div>
+      <div class="ligne"><div class="brin" style="background: var(--canard)"></div><div><h3>Notes et messages</h3><p>La conversation du foyer, et « Du nouveau » pour voir ce que l'autre a changé.</p></div></div>
     </div>
 
-    <h2>Venir d'une autre application</h2>
-    <section class="bloc">
+    <!-- --- Ce que Trame ne fait pas ------------------------------------------ -->
+    <h2 style="--fil: var(--terracotta)">Ce que Trame ne fera jamais</h2>
+    <div class="promesses">
+      <div class="promesse revele">Aucune publicité.<em>Pas de bannière, pas de contenu sponsorisé dans l'espace de votre famille.</em></div>
+      <div class="promesse revele">Aucun traqueur.<em>Ce site non plus ne vous suit pas : il n'envoie aucune requête vers un autre domaine.</em></div>
+      <div class="promesse revele">Aucune donnée vendue.<em>Les données d'un foyer servent au foyer. Définitivement, pas en attendant.</em></div>
+    </div>
+
+    <!-- --- Venir d'ailleurs ------------------------------------------------- -->
+    <h2 style="--fil: var(--ardoise)">Venir d'une autre application</h2>
+    <section class="bloc revele" style="--fil: var(--ardoise)">
       <p>
         Trame importe votre calendrier depuis un fichier <code>.ics</code> ou un lien d'abonnement
         (FamilyWall, FamilyApp, Google…), vos listes par simple copier-coller, et reconnaît les
@@ -127,8 +159,8 @@
       </p>
     </section>
 
-    <h2 id="aide">Aide</h2>
-    <section class="bloc">
+    <h2 id="aide" style="--fil: var(--canard)">Aide</h2>
+    <section class="bloc revele" style="--fil: var(--canard)">
       <p>
         Une question, un problème, une idée ? Écrivez à
         <strong><a href="mailto:bonjour@trameapp.app">bonjour@trameapp.app</a></strong>. Une vraie personne répond.
@@ -136,10 +168,10 @@
     </section>
 
     <footer>
-      <span>Trame</span>
+      <span class="marque">Trame</span>
       <a href="/securite">Sécurité</a>
       <a href="/confidentialite">Politique de confidentialité</a>
-      <a href="#aide">Aide</a>
+      <a href="mailto:bonjour@trameapp.app">Contact</a>
     </footer>
   </main>
 </body>
