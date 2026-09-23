@@ -124,7 +124,7 @@ a { color: var(--accent); }
 .trame-hero .fil:nth-of-type(2) { animation-delay: .25s; }
 .trame-hero .fil:nth-of-type(3) { animation-delay: .5s; }
 .trame-hero .noeud { opacity: 0; transform-box: fill-box; transform-origin: center; animation: nouer .5s ease-out forwards; }
-.trame-hero .lien { stroke-width: 2.5; stroke-dasharray: 90; stroke-dashoffset: 90; animation: tisser .6s ease-out forwards; }
+.trame-hero .lien { stroke-width: 2.5; stroke-dasharray: 400; stroke-dashoffset: 400; animation: tisser .6s ease-out forwards; }
 .trame-hero .nom { font: 700 15px -apple-system, "Segoe UI", sans-serif; }
 .trame-hero .etiq { font: 13px -apple-system, "Segoe UI", sans-serif; fill: var(--muted); opacity: 0; animation: apparaitre .6s ease-out forwards; }
 .trame-hero .maintenant { stroke: var(--text); stroke-opacity: .4; stroke-width: 1.5; }
