@@ -1,8 +1,9 @@
 /*
  * Site de Trame — direction « Trame + Carnet », comme l'app (voir DESIGN.md).
  *
- * PROMESSE ÉCRITE SUR LE SITE : il n'envoie aucune requête vers un autre
- * domaine. La police Fraunces est donc hébergée ici (dossier polices/), et le
+ * PROMESSE ÉCRITE SUR LE SITE : la VITRINE n'envoie aucune requête vers un
+ * autre domaine. (L'app web, sous /app, parle à Supabase une fois connecté :
+ * c'est dit en clair sur la page d'accueil et la page Sécurité.) La police Fraunces est donc hébergée ici (dossier polices/), et le
  * seul script (site.js) est le nôtre, sans bibliothèque ni mesure d'audience.
  * Toute animation respecte « réduire les animations ».
  */
@@ -96,6 +97,8 @@ a { color: var(--accent); }
 .entete nav { margin-left: auto; display: flex; gap: 22px; font-size: 15px; }
 .entete nav a { color: var(--muted); text-decoration: none; }
 .entete nav a:hover { color: var(--text); }
+/* L'accès à l'app : le seul lien coloré du menu. */
+.entete nav a.nav-app { color: var(--accent); font-weight: 700; }
 
 /* --- Accueil ------------------------------------------------------------- */
 .hero { position: relative; padding: 40px 0 8px; }
