@@ -98,7 +98,7 @@ a { color: var(--accent); }
 .entete nav a { color: var(--muted); text-decoration: none; }
 .entete nav a:hover { color: var(--text); }
 /* L'accès à l'app : le seul lien coloré du menu. */
-.entete nav a.nav-app { color: var(--accent); font-weight: 700; }
+.entete nav a.nav-app { color: var(--accent); font-weight: 700; white-space: nowrap; }
 
 /* --- Accueil ------------------------------------------------------------- */
 .hero { position: relative; padding: 40px 0 8px; }
@@ -294,6 +294,13 @@ footer a { color: var(--muted); }
   .entete img { width: 32px; height: 32px; border-radius: 10px; }
   .marque { font-size: 24px; }
   .entete nav { gap: 12px; font-size: 13.5px; }
+  /* Quatre liens ne tiennent pas sur un téléphone : seul « Ouvrir Trame »
+     reste en haut, en bouton. Les autres sont en bas de page. */
+  .entete nav a:not(.nav-app) { display: none; }
+  .entete nav a.nav-app {
+    border: 1.5px solid var(--accent); border-radius: 999px; padding: 6px 14px;
+    font-size: 14px; white-space: nowrap;
+  }
 }
 
 /* Respect du réglage « réduire les animations » : tout est visible d'emblée. */
