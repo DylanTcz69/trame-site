@@ -241,12 +241,25 @@ section.bloc li + li { margin-top: 6px; }
 .etiquette { display: inline-block; font-size: 13px; font-weight: 700; color: var(--ink); border-radius: 999px; padding: 3px 10px; margin-bottom: 10px; }
 code { background: var(--surface); border-radius: 6px; padding: 1px 6px; font-size: 15px; }
 
-footer {
-  margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border);
-  color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 18px; align-items: baseline;
+/* --- Pied de page : la marque à gauche, les liens en colonne à droite ---- */
+.pied {
+  margin-top: 96px; padding-top: 28px; border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr auto; column-gap: 40px; row-gap: 24px;
 }
-footer .marque { font-size: 22px; margin-right: auto; color: var(--text); }
-footer a { color: var(--muted); }
+.pied-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.pied-logo img { border-radius: 9px; }
+.pied .marque { font-size: 26px; }
+.pied-devise { font-family: var(--serif); font-style: italic; color: var(--muted); margin: 6px 0 0; }
+.pied-liens { display: flex; flex-direction: column; gap: 10px; }
+.pied-liens a { color: var(--muted); text-decoration: none; font-size: 15px; }
+.pied-liens a:hover { color: var(--text); }
+.pied-liens a:first-child { color: var(--accent); font-weight: 700; }
+.pied-mention { grid-column: 1 / -1; margin: 0; color: var(--faint); font-size: 13px; }
+@media (max-width: 520px) {
+  /* Téléphone : tout en une colonne, les liens en grille de deux. */
+  .pied { grid-template-columns: 1fr; }
+  .pied-liens { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+}
 
 /* --- Téléphone ----------------------------------------------------------- */
 @media (max-width: 820px) {
