@@ -30,12 +30,28 @@ const HOTES = [
 
 const TAILLE_MAX = 5 * 1024 * 1024;
 
+/**
+ * Liens universels iOS : trameapp.app/join/<jeton> ouvre l'app installée
+ * au lieu du navigateur. R7BXVGC68G est l'identifiant (public) de l'équipe
+ * Apple ; com.tracz.trame celui de l'app.
+ */
+export const LIENS_APPLE = {
+  applinks: {
+    details: [{ appIDs: ['R7BXVGC68G.com.tracz.trame'], components: [{ '/': '/join/*' }] }],
+  },
+};
+
 export default {
   async fetch(requete, env) {
     const url = new URL(requete.url);
     const agenda = url.pathname.match(/^\/agenda\/([0-9a-f]{48})(?:\.ics)?$/);
     if (agenda) return flux(agenda[1], env);
     if (url.pathname === '/ics-proxy') return relais(requete, url, env);
+    if (url.pathname === '/.well-known/apple-app-site-association') {
+      return new Response(JSON.stringify(LIENS_APPLE), {
+        headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' },
+      });
+    }
     return env.ASSETS.fetch(requete);
   },
 };
