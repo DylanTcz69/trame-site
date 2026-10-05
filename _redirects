@@ -5,6 +5,7 @@
 /                  /index.html            200
 /securite          /securite.html         200
 /confidentialite   /confidentialite.html  200
+/aide              /aide.html             200
 
 # Lien d'invitation court : trameapp.app/join/<jeton> → écran de l'app.
 /join/*            /app/join/:splat       302
