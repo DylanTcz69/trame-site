@@ -18,7 +18,7 @@
       <nav><a href="/">Accueil</a><a href="/securite">Sécurité</a></nav>
     </header>
     <h1>Politique de confidentialité</h1>
-    <p class="muted">Dernière mise à jour : 17 septembre 2026</p>
+    <p class="muted">Dernière mise à jour : 7 octobre 2026</p>
 
     <p class="lead">Trame est une application familiale : vos données appartiennent à votre foyer, pas à nous.</p>
 
@@ -38,6 +38,8 @@
         <li>Votre prénom affiché, votre couleur et, si vous en ajoutez une, votre photo de profil.</li>
         <li>Le contenu que vous créez dans un foyer : agenda, listes, notes, repas, recettes, dépenses, emploi du temps, messages, documents et photos.</li>
         <li>Votre position, uniquement si vous activez le partage dans le module Localisation, et seulement lorsque l’application est ouverte. Aucun suivi en arrière-plan.</li>
+        <li>Si vous acceptez les notifications : un identifiant de notification propre à votre téléphone. Il est effacé quand vous vous déconnectez.</li>
+        <li>Si un adulte du foyer relie un agenda Google ou Outlook : l’adresse secrète de cet agenda et une copie de ses événements.</li>
       </ul>
     </section>
 
@@ -58,6 +60,26 @@
         que des personnes qui partagent un foyer avec vous ; elle est réduite et débarrassée de ses
         métadonnées (dont la position GPS) avant l’envoi.
       </p>
+      <p>
+        <strong>Agendas partagés, seulement si un adulte du foyer le choisit</strong>
+        (Réglages › Google et Outlook) :
+      </p>
+      <ul>
+        <li>
+          <strong>Lien d’abonnement.</strong> Une adresse secrète (trameapp.app/agenda/…) donne, en
+          lecture seule, le nom du foyer et ses événements : titre, lieu, notes, horaires et
+          récurrence, sur les trois derniers mois et à venir. Les participants et les agendas
+          importés n’y figurent pas. Toute personne ou tout service qui connaît cette adresse peut la
+          lire : c’est ainsi que Google Agenda ou Outlook l’affichent quand vous l’y ajoutez. Seuls
+          les adultes du foyer voient ce lien ; un adulte peut le remplacer ou le supprimer à tout
+          moment, et l’ancienne adresse cesse aussitôt de fonctionner.
+        </li>
+        <li>
+          <strong>Agendas Google ou Outlook relus dans Trame.</strong> Leur adresse secrète n’est
+          visible que des adultes du foyer. Leurs événements, recopiés en lecture seule, sont
+          visibles de tout le foyer. La relecture est faite par l’appareil d’un adulte du foyer.
+        </li>
+      </ul>
     </section>
 
     <section class="bloc">
@@ -69,16 +91,31 @@
         française, qui ne conserve aucune copie de leur contenu et efface ses journaux d’envoi
         après un mois.
       </p>
+      <p>Deux autres services interviennent :</p>
+      <ul>
+        <li>
+          <strong>Notifications.</strong> Si vous les acceptez, le texte d’une notification (nom du
+          foyer, prénom de l’auteur et intitulé de l’élément, par exemple « Camille a ajouté
+          Dentiste ») et l’identifiant de notification de votre téléphone sont transmis au service
+          de notifications d’<strong>Expo</strong>, société américaine, qui les relaie à Apple pour
+          l’affichage sur votre téléphone.
+        </li>
+        <li>
+          <strong>Site trameapp.app.</strong> Il est servi par <strong>Cloudflare</strong>, société
+          américaine. Le lien d’abonnement d’agenda passe par ce site, de même que, dans la version
+          web, la lecture des agendas Google ou Outlook.
+        </li>
+      </ul>
       <p>
-        <strong>Communication hors du Québec.</strong> Vos renseignements sont donc conservés dans
+        <strong>Communication hors du Québec.</strong> Vos renseignements sont conservés dans
         l’Union européenne. Ils y bénéficient du Règlement général sur la protection des données
-        (RGPD), dont le niveau de protection est comparable à celui exigé par la Loi 25. Aucune
-        donnée n’est transférée ailleurs.
+        (RGPD), dont le niveau de protection est comparable à celui exigé par la Loi 25. Seuls les
+        éléments décrits ci-dessus (texte des notifications, agendas partagés) passent par des
+        services situés aux États-Unis.
       </p>
       <p>
         Sur votre téléphone, la session de connexion est chiffrée et sa clé est rangée dans le
-        Trousseau iOS. Sur le web, elle est gardée dans le stockage de votre navigateur ; aucune
-        donnée n'y est envoyée ailleurs qu'à Supabase.
+        Trousseau iOS. Sur le web, elle est gardée dans le stockage de votre navigateur.
       </p>
     </section>
 
