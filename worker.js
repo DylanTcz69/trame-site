@@ -1,7 +1,8 @@
 /**
  * Programme de trameapp.app (Cloudflare Worker, devant les fichiers statiques).
  *
- * Il ne répond qu'à deux adresses ; tout le reste est servi tel quel.
+ * Il ne répond qu'à quelques adresses (flux d'agenda, relais .ics, liens
+ * universels, vidéos /media/) ; tout le reste est servi tel quel.
  *
  *   /agenda/<jeton>.ics  Flux d'abonnement : l'agenda du foyer au format
  *                        iCalendar, pour Google Agenda, Outlook ou l'iPhone.
@@ -41,12 +42,56 @@ export const LIENS_APPLE = {
   },
 };
 
+/**
+ * Vidéos du site (/media/…) : Safari et l'iPhone n'acceptent de lire une vidéo
+ * que si le serveur sait répondre aux requêtes PARTIELLES (« Range: bytes=… »,
+ * réponse 206). Les fichiers statiques de Cloudflare répondent 200 avec le
+ * fichier entier : la boucle du haut de la page ne se lançait donc pas sur
+ * Apple. Les fichiers sont petits (moins de 2 Mo) : on les lit en entier et on
+ * en renvoie la tranche demandée. Exporté pour les tests (tests-worker.mjs).
+ */
+export async function servirMedia(requete, env) {
+  const methode = requete.method;
+  if (methode !== 'GET' && methode !== 'HEAD') return env.ASSETS.fetch(requete);
+  const entier = await env.ASSETS.fetch(new Request(requete.url, { method: 'GET' }));
+  if (!entier.ok) return entier;
+
+  const tout = await entier.arrayBuffer();
+  const total = tout.byteLength;
+  const entetes = new Headers(entier.headers);
+  entetes.set('accept-ranges', 'bytes');
+  entetes.delete('content-range');
+
+  const plage = /^bytes=(\d*)-(\d*)$/.exec((requete.headers.get('range') ?? '').trim());
+  if (!plage || (plage[1] === '' && plage[2] === '')) {
+    entetes.set('content-length', String(total));
+    return new Response(methode === 'HEAD' ? null : tout, { status: 200, headers: entetes });
+  }
+  let debut;
+  let fin;
+  if (plage[1] === '') {
+    // « bytes=-500 » : les 500 derniers octets.
+    debut = Math.max(0, total - Number(plage[2]));
+    fin = total - 1;
+  } else {
+    debut = Number(plage[1]);
+    fin = plage[2] === '' ? total - 1 : Math.min(Number(plage[2]), total - 1);
+  }
+  if (debut >= total || debut > fin) {
+    return new Response(null, { status: 416, headers: { 'content-range': `bytes */${total}`, 'accept-ranges': 'bytes' } });
+  }
+  entetes.set('content-range', `bytes ${debut}-${fin}/${total}`);
+  entetes.set('content-length', String(fin - debut + 1));
+  return new Response(methode === 'HEAD' ? null : tout.slice(debut, fin + 1), { status: 206, headers: entetes });
+}
+
 export default {
   async fetch(requete, env) {
     const url = new URL(requete.url);
     const agenda = url.pathname.match(/^\/agenda\/([0-9a-f]{48})(?:\.ics)?$/);
     if (agenda) return flux(agenda[1], env);
     if (url.pathname === '/ics-proxy') return relais(requete, url, env);
+    if (url.pathname.startsWith('/media/')) return servirMedia(requete, env);
     if (url.pathname === '/.well-known/apple-app-site-association') {
       return new Response(JSON.stringify(LIENS_APPLE), {
         headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' },
