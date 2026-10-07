@@ -25,6 +25,17 @@
       </nav>
     </header>
 
+    <!-- Boucle de 10 s, décorative et muette (motion/ : composition Site-Boucle) :
+         un ruban de cartes, un module par carte, sur les trois fils de Trame.
+         Foyer fictif. Ne se lance pas si « réduire les animations » est activé
+         (site.js), et se met en pause hors de l'écran. -->
+    <div class="boucle" aria-hidden="true">
+      <video autoplay muted loop playsinline preload="auto" poster="media/boucle.jpg" width="1500" height="520" tabindex="-1">
+        <source src="media/boucle.webm" type="video/webm">
+        <source src="media/boucle.mp4" type="video/mp4">
+      </video>
+    </div>
+
     <!-- --- Accueil : la promesse, puis une trame qui se tisse ------------- -->
     <section class="hero">
       <h1>La semaine de votre famille,<br>planifiée à deux.</h1>

@@ -101,7 +101,12 @@ a { color: var(--accent); }
 .entete nav a.nav-app { color: var(--accent); font-weight: 700; white-space: nowrap; }
 
 /* --- Accueil ------------------------------------------------------------- */
-.hero { position: relative; padding: 40px 0 8px; }
+/* La boucle du haut : même fond que la page, bords estompés dans la vidéo. */
+.boucle { margin: 0 -22px; line-height: 0; }
+/* Rognée en haut et en bas (les cartes occupent le milieu de l'image) pour ne
+   pas repousser le bouton « Ouvrir Trame » sous la ligne de flottaison. */
+.boucle video { display: block; width: 100%; height: auto; aspect-ratio: 1500 / 420; object-fit: cover; background: var(--bg); }
+.hero { position: relative; padding: 24px 0 8px; }
 .boutons { display: flex; flex-wrap: wrap; gap: 22px; align-items: center; }
 .bouton {
   display: inline-block;

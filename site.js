@@ -26,6 +26,20 @@
     li.classList.remove('plus'); void li.offsetWidth; li.classList.add('plus');
   }
 
+  // --- La boucle du haut : immobile si « réduire les animations », en pause hors de l'écran ---
+  var boucle = document.querySelector('.boucle video');
+  if (boucle) {
+    if (calme) {
+      boucle.removeAttribute('autoplay');
+      boucle.pause();
+    } else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entrees) {
+        var p = entrees[0].isIntersecting ? boucle.play() : boucle.pause();
+        if (p && p.catch) p.catch(function () { /* lecture refusée : l'image fixe reste */ });
+      }).observe(boucle);
+    }
+  }
+
   // --- Apparition au défilement ------------------------------------------
   var aReveler = document.querySelectorAll('.revele, .sommaire .ligne');
   if ('IntersectionObserver' in window && !calme) {

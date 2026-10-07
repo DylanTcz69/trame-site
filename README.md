@@ -11,6 +11,7 @@ source.
 | `securite.html`         | Vitrine technique : modèle d'autorisation, tests, risques.   |
 | `confidentialite.html`  | Politique de confidentialité (exigée par l'App Store).       |
 | `style.css`             | Direction artistique « Tissage » vive, jetons identiques à l'app. |
+| `media/`                | Boucle muette du haut de la page (`boucle.webm`, `boucle.mp4`, image fixe `boucle.jpg`), rendue par `motion/` (composition `Site-Boucle`, commandes dans `motion/README.md`). |
 
 ## Reste à faire
 
