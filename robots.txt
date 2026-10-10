@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /agenda/
+Disallow: /join/
+
+Sitemap: https://trameapp.app/sitemap.xml
