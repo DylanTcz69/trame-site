@@ -239,4 +239,15 @@
       });
     }, { threshold: 0.6 }).observe(demo);
   }
+
+  // Boutique App Store : Trame n'est publiée qu'au Canada, en France, en Belgique,
+  // au Luxembourg et en Suisse. Sans pays dans l'adresse, Apple renvoie vers la
+  // boutique du visiteur (souvent les États-Unis : « page introuvable »). On
+  // choisit donc la boutique d'après la langue du navigateur, France par défaut.
+  var boutiques = { CA: 'ca', BE: 'be', LU: 'lu', CH: 'ch', FR: 'fr' };
+  var region = ((navigator.language || '').split('-')[1] || '').toUpperCase();
+  var boutique = boutiques[region] || 'fr';
+  [].forEach.call(document.querySelectorAll('a[data-appstore]'), function (a) {
+    a.href = a.href.replace('/fr/app/', '/' + boutique + '/app/');
+  });
 })();
