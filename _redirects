@@ -7,6 +7,7 @@
 /confidentialite   /confidentialite.html  200
 /aide              /aide.html             200
 /age               /age.html              200
+/mentions-legales  /mentions-legales.html 200
 
 # Lien d'invitation court : trameapp.app/join/<jeton> → écran de l'app.
 /join/*            /app/join/:splat       302
@@ -56,6 +57,8 @@
 /app/notes/*                 /trame-app.html  200
 /app/profile                 /trame-app.html  200
 /app/profile/*               /trame-app.html  200
+/app/qui                     /trame-app.html  200
+/app/qui/*                   /trame-app.html  200
 /app/quick-add               /trame-app.html  200
 /app/quick-add/*             /trame-app.html  200
 /app/recipes                 /trame-app.html  200

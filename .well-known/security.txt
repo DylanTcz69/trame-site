@@ -1,0 +1,6 @@
+# Signaler une faille de sécurité sur Trame (RFC 9116).
+Contact: mailto:securite@trameapp.app
+Expires: 2027-10-01T00:00:00.000Z
+Preferred-Languages: fr, en
+Canonical: https://trameapp.app/.well-known/security.txt
+Policy: https://trameapp.app/securite
