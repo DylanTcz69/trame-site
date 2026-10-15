@@ -17,3 +17,23 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), geolocation=(self)
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Cross-Origin-Opener-Policy: same-origin
+
+# Trusted Types (protection contre l'injection de HTML par script), seulement
+# sur les pages de la vitrine : leur script (site.js) n'écrit jamais de HTML,
+# seulement du texte. L'app web (/app) n'est pas concernée : sa bibliothèque
+# pourrait en dépendre. La règle s'ajoute à celle de /*.
+/
+  Content-Security-Policy: require-trusted-types-for 'script'
+/index.html
+  Content-Security-Policy: require-trusted-types-for 'script'
+/securite
+  Content-Security-Policy: require-trusted-types-for 'script'
+/confidentialite
+  Content-Security-Policy: require-trusted-types-for 'script'
+/aide
+  Content-Security-Policy: require-trusted-types-for 'script'
+/age
+  Content-Security-Policy: require-trusted-types-for 'script'
+/mentions-legales
+  Content-Security-Policy: require-trusted-types-for 'script'
