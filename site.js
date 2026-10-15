@@ -155,8 +155,6 @@
   // Les articles déjà présents se cochent aussi, au clavier comme au doigt.
   document.querySelectorAll('.demo li').forEach(function (li) {
     li.tabIndex = 0;
-    li.setAttribute('role', 'checkbox');
-    li.setAttribute('aria-checked', 'false');
   });
 
   function ajouter(liste, texte) {
@@ -167,8 +165,6 @@
     li.textContent = texte; // textContent : jamais de HTML venu de la saisie.
     li.className = 'neuf';
     li.tabIndex = 0;
-    li.setAttribute('role', 'checkbox');
-    li.setAttribute('aria-checked', 'false');
     liste.appendChild(li);
     // Pas plus de six lignes : les plus anciennes laissent la place.
     while (liste.children.length > 6) liste.removeChild(liste.firstChild);
@@ -180,7 +176,6 @@
     var texte = nomDe(li);
     var autre = li.parentNode === chezCamille ? chezHugo : chezCamille;
     li.classList.add('coche');
-    li.setAttribute('aria-checked', 'true');
     lancerPerle();
     var jumeau = trouver(autre, texte);
     setTimeout(function () { if (jumeau) jumeau.classList.add('coche'); }, 650);
