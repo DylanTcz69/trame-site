@@ -22,6 +22,14 @@
 
 const SUPABASE = 'https://mbijadlknqwdvvhbhnod.supabase.co';
 
+/** En-têtes ajoutés aux réponses du programme (flux, relais, messages d'erreur). */
+const ENTETES_SURES = {
+  'x-content-type-options': 'nosniff',
+  'content-security-policy': "default-src 'none'; frame-ancestors 'none'",
+  'referrer-policy': 'no-referrer',
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
+};
+
 /** Hébergeurs d'agendas acceptés par le relais. */
 const HOTES = [
   /^calendar\.google\.com$/,
@@ -118,8 +126,15 @@ async function flux(jeton, env) {
   const donnees = await rep.json();
   if (!donnees) return texte('Ce lien d’agenda n’existe pas ou a été supprimé.', 404);
 
-  return new Response(versIcs(donnees), {
+  let corpsIcs;
+  try {
+    corpsIcs = versIcs(donnees);
+  } catch {
+    return texte('Agenda indisponible pour le moment.', 503);
+  }
+  return new Response(corpsIcs, {
     headers: {
+      ...ENTETES_SURES,
       'content-type': 'text/calendar; charset=utf-8',
       'cache-control': 'private, max-age=300',
       'x-robots-tag': 'noindex',
@@ -143,36 +158,74 @@ export function versIcs({ name, events }) {
   ];
   const maintenant = horodatageUtc(new Date().toISOString());
   for (const e of events) {
-    l.push('BEGIN:VEVENT', `UID:${e.id}@trameapp.app`, `DTSTAMP:${maintenant}`);
-    l.push(`LAST-MODIFIED:${horodatageUtc(e.updated_at)}`);
-    if (e.all_day) {
-      const debut = dateLocale(e.starts_at, e.time_zone);
-      l.push(`DTSTART;VALUE=DATE:${debut}`, `DTEND;VALUE=DATE:${finJournee(e, debut)}`);
-    } else {
-      l.push(`DTSTART;TZID=${e.time_zone}:${heureLocale(e.starts_at, e.time_zone)}`);
-      l.push(`DTEND;TZID=${e.time_zone}:${heureLocale(e.ends_at, e.time_zone)}`);
-    }
-    if (e.rrule) {
-      l.push(`RRULE:${e.rrule.replace(/^RRULE:/i, '')}`);
-      for (const annulee of e.cancelled ?? []) {
-        l.push(
-          e.all_day
-            ? `EXDATE;VALUE=DATE:${dateLocale(annulee, e.time_zone)}`
-            : `EXDATE;TZID=${e.time_zone}:${heureLocale(annulee, e.time_zone)}`
-        );
+    // Un événement mal formé est ignoré : il ne doit jamais casser tout le flux.
+    if (!fuseauValide(e.time_zone)) continue;
+    const brute = e.rrule ? String(e.rrule).replace(/^RRULE:/i, '') : '';
+    const rrule = brute && RRULE_OK.test(brute) ? brute : null;
+    const ev = [];
+    try {
+      ev.push('BEGIN:VEVENT', `UID:${nettoyer(e.id)}@trameapp.app`, `DTSTAMP:${maintenant}`);
+      ev.push(`LAST-MODIFIED:${horodatageUtc(e.updated_at)}`);
+      if (e.all_day) {
+        const debut = dateLocale(e.starts_at, e.time_zone);
+        ev.push(`DTSTART;VALUE=DATE:${debut}`, `DTEND;VALUE=DATE:${finJournee(e, debut)}`);
+      } else {
+        ev.push(`DTSTART;TZID=${e.time_zone}:${heureLocale(e.starts_at, e.time_zone)}`);
+        ev.push(`DTEND;TZID=${e.time_zone}:${heureLocale(e.ends_at, e.time_zone)}`);
       }
+      if (rrule) {
+        ev.push(`RRULE:${rrule}`);
+        for (const annulee of e.cancelled ?? []) {
+          ev.push(
+            e.all_day
+              ? `EXDATE;VALUE=DATE:${dateLocale(annulee, e.time_zone)}`
+              : `EXDATE;TZID=${e.time_zone}:${heureLocale(annulee, e.time_zone)}`
+          );
+        }
+      }
+      ev.push(`SUMMARY:${echapper(e.title)}`);
+      if (e.location) ev.push(`LOCATION:${echapper(e.location)}`);
+      if (e.notes) ev.push(`DESCRIPTION:${echapper(e.notes)}`);
+      ev.push('END:VEVENT');
+    } catch {
+      continue;
     }
-    l.push(`SUMMARY:${echapper(e.title)}`);
-    if (e.location) l.push(`LOCATION:${echapper(e.location)}`);
-    if (e.notes) l.push(`DESCRIPTION:${echapper(e.notes)}`);
-    l.push('END:VEVENT');
+    l.push(...ev);
   }
   l.push('END:VCALENDAR');
   return l.map(replier).join('\r\n') + '\r\n';
 }
 
+/** Caractères autorisés dans une règle de récurrence : jamais de retour à la ligne. */
+const RRULE_OK = /^[A-Za-z0-9=;,:+\-\/ ]{1,500}$/;
+
+/** Remplace les caractères de contrôle (sauf tabulation) et les séparateurs de ligne Unicode. */
+function nettoyer(v) {
+  let sortie = '';
+  for (const c of String(v)) {
+    const n = c.codePointAt(0);
+    const interdit = (n < 32 && n !== 9) || n === 127 || n === 0x2028 || n === 0x2029;
+    sortie += interdit ? ' ' : c;
+  }
+  return sortie;
+}
+
+/** Échappement iCalendar : \r seul, \r\n et \n deviennent tous « \n » ; plus aucune ligne injectable. */
 function echapper(v) {
-  return String(v).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  return String(v)
+    .split(/\r\n|\r|\n/)
+    .map((ligne) => nettoyer(ligne).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,'))
+    .join('\\n');
+}
+
+function fuseauValide(tz) {
+  if (typeof tz !== 'string' || !/^[A-Za-z0-9_\/+\-]{1,64}$/.test(tz)) return false;
+  try {
+    new Intl.DateTimeFormat('en-GB', { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** Lignes de 75 octets au plus, suite précédée d'une espace (RFC 5545). */
@@ -244,6 +297,67 @@ function lendemain(aaaammjj) {
 // Relais entrant (version web seulement)
 // -----------------------------------------------------------------------------
 
+const SAUTS_MAX = 3;
+
+/** Hôte autorisé pour le relais : https et liste blanche (voir HOTES). */
+export const hoteAutorise = (u) => u.protocol === 'https:' && HOTES.some((h) => h.test(u.hostname));
+
+/** Lit le corps d'une réponse sans dépasser `max` octets ; null si trop gros. */
+export async function lireBorne(rep, max) {
+  const l = Number(rep.headers.get('content-length'));
+  if (Number.isFinite(l) && l > max) return null;
+  const lecteur = rep.body.getReader();
+  const morceaux = [];
+  let n = 0;
+  for (;;) {
+    const { done, value } = await lecteur.read();
+    if (done) break;
+    n += value.length;
+    if (n > max) {
+      await lecteur.cancel();
+      return null;
+    }
+    morceaux.push(value);
+  }
+  const tout = new Uint8Array(n);
+  let p = 0;
+  for (const m of morceaux) {
+    tout.set(m, p);
+    p += m.length;
+  }
+  return new TextDecoder().decode(tout);
+}
+
+/**
+ * Télécharge un agenda en suivant à la main au plus SAUTS_MAX redirections, dont
+ * chacune doit rester chez un hébergeur autorisé : une redirection ouverte chez
+ * Google ne peut plus mener le relais ailleurs. Exporté pour les tests.
+ */
+export async function telecharger(depart, recuperer = fetch) {
+  let courante = depart;
+  for (let saut = 0; saut <= SAUTS_MAX; saut++) {
+    const rep = await recuperer(courante.toString(), { redirect: 'manual', signal: AbortSignal.timeout(10000) });
+    if (rep.status >= 300 && rep.status < 400) {
+      let suite;
+      try {
+        suite = new URL(rep.headers.get('location') ?? '', courante);
+      } catch {
+        return texte('Redirection invalide.', 502);
+      }
+      if (!hoteAutorise(suite)) return texte('Redirection refusée.', 502);
+      courante = suite;
+      continue;
+    }
+    if (!rep.ok) return texte(`L’agenda a répondu ${rep.status}.`, 502);
+    const corps = await lireBorne(rep, TAILLE_MAX);
+    if (corps === null) return texte('Agenda trop volumineux.', 413);
+    return new Response(corps, {
+      headers: { ...ENTETES_SURES, 'content-type': 'text/calendar; charset=utf-8', 'cache-control': 'no-store' },
+    });
+  }
+  return texte('Trop de redirections.', 502);
+}
+
 async function relais(requete, url, env) {
   const jwt = (requete.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
   if (!jwt) return texte('Connexion requise.', 401);
@@ -258,19 +372,13 @@ async function relais(requete, url, env) {
   } catch {
     return texte('Adresse invalide.', 400);
   }
-  if (cible.protocol !== 'https:' || !HOTES.some((h) => h.test(cible.hostname))) {
+  if (!hoteAutorise(cible)) {
     return texte('Seuls les agendas Google, Outlook et iCloud sont acceptés.', 400);
   }
 
-  const rep = await fetch(cible.toString(), { redirect: 'follow' });
-  if (!rep.ok) return texte(`L’agenda a répondu ${rep.status}.`, 502);
-  const corps = await rep.text();
-  if (corps.length > TAILLE_MAX) return texte('Agenda trop volumineux.', 413);
-  return new Response(corps, {
-    headers: { 'content-type': 'text/calendar; charset=utf-8', 'cache-control': 'no-store' },
-  });
+  return telecharger(cible);
 }
 
 function texte(message, statut) {
-  return new Response(message, { status: statut, headers: { 'content-type': 'text/plain; charset=utf-8' } });
+  return new Response(message, { status: statut, headers: { ...ENTETES_SURES, 'content-type': 'text/plain; charset=utf-8' } });
 }
