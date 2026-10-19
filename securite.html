@@ -62,8 +62,9 @@
     <div class="grille">
       <div class="carte">
         <h3>Isolation par foyer</h3>
-        <p>Chaque table est protégée ligne à ligne. Le foyer d'appartenance d'une donnée est
-          réécrit par la base à l'écriture : le client ne peut pas le choisir.</p>
+        <p>Chaque table est protégée ligne à ligne. Pour les événements, les articles de liste et les ingrédients, le foyer d'appartenance d'une
+          donnée est réécrit par la base à l'écriture ; pour les autres données, il est vérifié par
+          les règles d'accès à chaque requête.</p>
       </div>
       <div class="carte">
         <h3>Rôles réels</h3>
@@ -72,12 +73,12 @@
       </div>
       <div class="carte">
         <h3>Connexion sans mot de passe</h3>
-        <p>Un code à usage unique envoyé par e-mail. Aucun mot de passe à retenir, à réutiliser,
+        <p>Pour les utilisateurs : un code à usage unique envoyé par e-mail. Aucun mot de passe à retenir, à réutiliser,
           ni à se faire voler dans une fuite ailleurs.</p>
       </div>
       <div class="carte">
         <h3>Session chiffrée sur l'appareil</h3>
-        <p>Le jeton de session est chiffré (AES-256) ; la clé vit dans l'enclave sécurisée du
+        <p>Le jeton de session est chiffré (AES-256) ; la clé vit dans le Trousseau d'iOS du
           téléphone et ne quitte jamais cet appareil.</p>
       </div>
       <div class="carte">
@@ -98,13 +99,12 @@
         Affirmer qu'une application est sécurisée ne vaut rien sans vérification. Trame embarque
         une <strong>batterie de tests d'intrusion</strong> qui rejouent, depuis un compte
         d'attaquant, les scénarios qu'on redoute : lire l'agenda d'un autre foyer, s'y ajouter
-        comme membre, déplacer une donnée d'un foyer à l'autre, se promouvoir administrateur,
-        écrire alors qu'on est en lecture seule.
+        comme membre, se promouvoir administrateur, écrire alors qu'on est en lecture seule.
       </p>
       <p>
-        Ces tests s'exécutent automatiquement à chaque modification du code, sur une base de
-        données neuve, par intégration continue. Une règle d'accès affaiblie par mégarde fait
-        échouer la vérification avant d'atteindre qui que ce soit.
+        Ces tests sont conçus pour être rejoués sur une base de données neuve à chaque
+        modification des règles d'accès, pour qu'une règle affaiblie par mégarde soit détectée
+        avant d'atteindre qui que ce soit.
       </p>
     </section>
 
